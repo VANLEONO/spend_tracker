@@ -4,6 +4,8 @@ from fastapi import FastAPI, Depends
 from core.db import init_db, engine
 from sqlmodel import Session, select
 from entities.user.model import User
+from api.deps import CurrentUser
+from api.main import app_router
 
 app = FastAPI()
 
@@ -20,12 +22,4 @@ def init() -> None:
 
 init()
 
-@app.get("/")
-def read_root(session: SessionDep):
-    user = session.exec(select(User).where(User.email == "admin@example.com"))
-    return list(user)
-
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int, c: Union[str, None] = None):
-    return {"item_id": item_id, "g": c}
+app.include_router(app_router)

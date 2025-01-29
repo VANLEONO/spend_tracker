@@ -1,24 +1,17 @@
 from sqlmodel import Session, create_engine, select, SQLModel
 
-from entities.user import crud
+from entities.user.crud import create_db_user
 from core.config import settings
 from entities.user.model import User, UserCreate
+from entities.budget.model import Budget
+from entities.category.model import Category
+from entities.spend.model import Spend
+from entities.links import UserBudgetLink
 
 engine = create_engine(str(settings.SQLALCHEMY_DATABASE_URI))
 
-
-# make sure all SQLModel models are imported (app.models) before initializing DB
-# otherwise, SQLModel might fail to initialize relationships properly
-# for more details: https://github.com/fastapi/full-stack-fastapi-template/issues/28
-
-
 def init_db(session: Session) -> None:
-    # Tables should be created with Alembic migrations
-    # But if you don't want to use migrations, create
-    # the tables un-commenting the next lines
-    # from sqlmodel import SQLModel
-
-    # This works because the models are already imported and registered from app.models
+  
     SQLModel.metadata.create_all(engine)
 
     user = session.exec(
@@ -33,4 +26,4 @@ def init_db(session: Session) -> None:
             first_name='Ivan',
             second_name='Leonov'
         )
-        user = crud.create_user(session=session, user_create=user_in)
+        user = create_db_user(session=session, user_create=user_in)

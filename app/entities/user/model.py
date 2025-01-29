@@ -1,7 +1,9 @@
 import uuid
 
 from pydantic import EmailStr
-from sqlmodel import Field, Relationship, SQLModel, Column, String, Computed 
+from sqlmodel import Field, Relationship, SQLModel
+from entities.links import UserBudgetLink
+# from entities.budget.model import Budget
 
 class UserBase(SQLModel):
     email: EmailStr = Field(unique=True, index=True, max_length=255)
@@ -17,6 +19,7 @@ class UserBase(SQLModel):
 
 class User(UserBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    budgets: list["Budget"] = Relationship(back_populates='participants', link_model=UserBudgetLink)
     hashed_password: str
 
 class UserCreate(UserBase):
@@ -33,4 +36,4 @@ class UserPublic(UserBase):
     login: str
     is_superuser: bool
     is_active: bool
-    full_name: str
+    full_name: str | None
